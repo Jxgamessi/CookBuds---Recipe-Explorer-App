@@ -1,0 +1,1341 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+       debugShowCheckedModeBanner: false, 
+      title: 'CookBuds',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: LoginPage(),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('CookBuds'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: usernameController,
+              decoration: InputDecoration(
+                labelText: 'Username',
+                prefixIcon: Icon(Icons.person),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: passwordController,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                prefixIcon: Icon(Icons.lock),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Check login credentials (For demonstration purposes only)
+                if (usernameController.text == 'user' &&
+                    passwordController.text == 'password') {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => RecipePage()),
+                  );
+                } else {
+                  // Show an error message for demonstration purposes
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Login Failed'),
+                        content: Text(
+                            'Invalid username or password. Please try again.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              child: Text('Login'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Recipe {
+  final String name;
+  final List<String> ingredients;
+  final List<String> instructions;
+
+  Recipe({
+    required this.name,
+    required this.ingredients,
+    required this.instructions,
+  });
+}
+List<Recipe> likedRecipes = [];
+
+class Cuisine {
+  final String name;
+  final List<Recipe> recipes;
+
+  Cuisine({
+    required this.name,
+    required this.recipes,
+  });
+}
+
+class RecipePage extends StatelessWidget {
+  final List<Cuisine> cuisines = [
+    Cuisine(
+      name: 'Italian',
+      recipes: [
+        Recipe(
+          name: 'Pasta Carbonara',
+          ingredients: [
+            'Spaghetti',
+            'Guanciale',
+            'Pecorino cheese',
+            'Eggs',
+            'Black pepper',
+          ],
+          instructions: [
+            'Boil spaghetti according to package instructions.',
+            'Sauté guanciale until crispy.',
+            'Mix eggs, Pecorino cheese, and black pepper in a bowl.',
+            'Combine cooked spaghetti with the egg mixture.',
+            'Add crispy guanciale on top and serve.',
+          ],
+        ),Recipe(
+  name: 'Chicken Piccata',
+  ingredients: [
+    'Chicken breasts',
+    'All-purpose flour',
+    'Lemon',
+    'Capers',
+    'Chicken broth',
+    'Butter',
+  ],
+  instructions: [
+    'Dredge chicken breasts in flour and sauté until golden brown.',
+    'Remove excess oil and deglaze the pan with chicken broth.',
+    'Add lemon slices and capers, simmer until the sauce thickens.',
+    'Stir in butter for a rich and tangy flavor.',
+    'Serve the chicken with the piccata sauce.',
+  ],
+),
+Recipe(
+  name: 'Eggplant Parmesan',
+  ingredients: [
+    'Eggplant',
+    'Breadcrumbs',
+    'Eggs',
+    'Tomato sauce',
+    'Mozzarella cheese',
+    'Parmesan cheese',
+  ],
+  instructions: [
+    'Slice and bread eggplant with breadcrumbs and beaten eggs.',
+    'Bake until golden brown and crispy.',
+    'Layer eggplant slices with tomato sauce and cheeses.',
+    'Bake until the cheese is melted and bubbly.',
+    'Serve as a delicious vegetarian dish.',
+  ],
+),
+Recipe(
+  name: 'Ravioli with Sage Butter Sauce',
+  ingredients: [
+    'Ravioli',
+    'Butter',
+    'Fresh sage leaves',
+    'Parmesan cheese',
+    'Salt and pepper',
+  ],
+  instructions: [
+    'Boil ravioli according to package instructions.',
+    'In a separate pan, melt butter and sauté fresh sage leaves.',
+    'Toss the cooked ravioli in the sage butter sauce.',
+    'Sprinkle with Parmesan cheese, salt, and pepper.',
+    'Serve with additional Parmesan on top.',
+  ],
+),
+Recipe(
+  name: 'Veal Saltimbocca',
+  ingredients: [
+    'Veal cutlets',
+    'Prosciutto',
+    'Sage leaves',
+    'White wine',
+    'Chicken broth',
+    'Butter',
+  ],
+  instructions: [
+    'Place sage leaves on veal cutlets and wrap with prosciutto.',
+    'Pan-fry the veal until prosciutto is crispy.',
+    'Deglaze the pan with white wine and chicken broth.',
+    'Simmer until the sauce is reduced and veal is cooked.',
+    'Finish with a pat of butter for richness.',
+  ],
+),
+Recipe(
+  name: 'Shrimp Scampi',
+  ingredients: [
+    'Shrimp',
+    'Linguine pasta',
+    'Garlic',
+    'White wine',
+    'Lemon juice',
+    'Parsley',
+  ],
+  instructions: [
+    'Sauté shrimp and minced garlic in olive oil.',
+    'Deglaze with white wine and add lemon juice.',
+    'Cook until shrimp are pink and opaque.',
+    'Toss with cooked linguine pasta and fresh parsley.',
+    'Serve with a wedge of lemon on the side.',
+  ],
+),
+Recipe(
+  name: 'Chicken Alfredo Pasta',
+  ingredients: [
+    'Chicken breast',
+    'Fettuccine pasta',
+    'Heavy cream',
+    'Parmesan cheese',
+    'Garlic',
+    'Salt and pepper',
+  ],
+  instructions: [
+    'Cook fettuccine pasta according to package instructions.',
+    'Season chicken breast with salt and pepper, cook until done.',
+    'In a saucepan, melt butter and sauté minced garlic.',
+    'Add heavy cream and Parmesan cheese, stirring until melted.',
+    'Slice cooked chicken and toss it with the Alfredo sauce.',
+    'Combine with cooked fettuccine and serve hot.',
+  ],
+),
+Recipe(
+  name: 'Italian Wedding Soup',
+  ingredients: [
+    'Ground beef',
+    'Breadcrumbs',
+    'Egg',
+    'Parmesan cheese',
+    'Chicken broth',
+    'Spinach',
+    'Acini di pepe pasta',
+  ],
+  instructions: [
+    'Combine ground beef, breadcrumbs, egg, and Parmesan to make meatballs.',
+    'In a pot, heat chicken broth and add meatballs.',
+    'Stir in spinach and cooked acini di pepe pasta.',
+    'Simmer until meatballs are cooked through.',
+    'Serve hot with additional Parmesan on top.',
+  ],
+),
+Recipe(
+  name: 'Pesto Stuffed Chicken',
+  ingredients: [
+    'Chicken breasts',
+    'Pesto sauce',
+    'Cherry tomatoes',
+    'Mozzarella cheese',
+    'Olive oil',
+    'Italian seasoning',
+  ],
+  instructions: [
+    'Preheat oven and butterfly chicken breasts.',
+    'Spread pesto sauce on the inside of each breast.',
+    'Add sliced cherry tomatoes and mozzarella cheese.',
+    'Fold the chicken breasts and secure with toothpicks.',
+    'Drizzle with olive oil and sprinkle with Italian seasoning.',
+    'Bake until chicken is cooked and cheese is melted.',
+  ],
+),
+Recipe(
+  name: 'Sausage and Mushroom Risotto',
+  ingredients: [
+    'Arborio rice',
+    'Italian sausage',
+    'Mushrooms',
+    'Onion',
+    'Chicken broth',
+    'White wine',
+    'Parmesan cheese',
+  ],
+  instructions: [
+    'Cook Italian sausage until browned and set aside.',
+    'Sauté chopped onion and mushrooms in olive oil.',
+    'Add Arborio rice and cook until translucent.',
+    'Deglaze with white wine and let it evaporate.',
+    'Gradually add chicken broth while stirring until rice is cooked.',
+    'Stir in grated Parmesan cheese and cooked sausage.',
+  ],
+),
+Recipe(
+  name: 'Eggplant Caponata',
+  ingredients: [
+    'Eggplant',
+    'Tomatoes',
+    'Celery',
+    'Olives',
+    'Capers',
+    'Red wine vinegar',
+    'Olive oil',
+  ],
+  instructions: [
+    'Dice eggplant and tomatoes, chop celery, olives, and capers.',
+    'Sauté eggplant in olive oil until softened.',
+    'Add tomatoes, celery, olives, and capers to the pan.',
+    'Stir in red wine vinegar and cook until flavors meld.',
+    'Serve as a flavorful topping or side dish.',
+  ],
+),
+// Add more Italian recipes...
+
+        
+      ],
+    ),
+    Cuisine(
+  name: 'Japanese',
+  recipes: [
+    Recipe(
+      name: 'Sushi',
+      ingredients: [
+        'Sushi rice',
+        'Nori seaweed',
+        'Fresh fish (e.g., tuna, salmon)',
+        'Vegetables (e.g., cucumber, avocado)',
+        'Soy sauce',
+        'Wasabi',
+        'Pickled ginger',
+      ],
+      instructions: [
+        'Prepare sushi rice according to package instructions.',
+        'Lay a sheet of nori on a bamboo sushi mat.',
+        'Spread rice on the nori, leaving a border at the top.',
+        'Add thin slices of fish and vegetables on the rice.',
+        'Roll the sushi using the bamboo mat as a guide.',
+        'Slice the roll into bite-sized pieces and serve with soy sauce, wasabi, and pickled ginger.',
+      ],
+    ),
+    Recipe(
+      name: 'Ramen',
+      ingredients: [
+        'Ramen noodles',
+        'Broth (chicken or pork)',
+        'Soy sauce',
+        'Mirin',
+        'Green onions',
+        'Soft-boiled egg',
+        'Seaweed (optional)',
+      ],
+      instructions: [
+        'Cook ramen noodles according to package instructions.',
+        'In a pot, heat the broth and add soy sauce and mirin to taste.',
+        'Place cooked noodles in a bowl and pour the hot broth over them.',
+        'Top with sliced green onions, a soft-boiled egg, and seaweed if desired.',
+        'Serve hot and enjoy your ramen!',
+      ],
+    ),
+    Recipe(
+      name: 'Tempura',
+      ingredients: [
+        'Shrimp or vegetables (sweet potato, zucchini)',
+        'Tempura batter mix',
+        'Ice-cold water',
+        'Vegetable oil',
+        'Dipping sauce',
+      ],
+      instructions: [
+        'Prepare tempura batter by mixing ice-cold water with tempura batter mix.',
+        'Dip shrimp or vegetables into the batter.',
+        'Deep fry until golden brown and crispy.',
+        'Serve with a side of dipping sauce.',
+      ],
+    ),
+        Recipe(
+      name: 'Miso Soup',
+      ingredients: [
+        'Miso paste',
+        'Dashi broth',
+        'Tofu, cubed',
+        'Seaweed (wakame)',
+        'Green onions',
+      ],
+      instructions: [
+        'Dissolve miso paste in dashi broth over low heat.',
+        'Add cubed tofu, seaweed, and sliced green onions.',
+        'Simmer until the tofu is heated through.',
+        'Serve hot miso soup.',
+      ],
+    ),
+ Recipe(
+      name: 'Okonomiyaki',
+      ingredients: [
+        'Cabbage, shredded',
+        'All-purpose flour',
+        'Water',
+        'Eggs',
+        'Baking powder',
+        'Pork belly slices',
+        'Okonomiyaki sauce',
+        'Japanese mayo',
+        'Bonito flakes',
+        'Aonori (seaweed flakes)',
+      ],
+      instructions: [
+        'Mix shredded cabbage, flour, water, eggs, and baking powder to form a batter.',
+        'Heat a griddle and cook pork belly slices on one side.',
+        'Pour the batter over the pork slices and flip when the bottom is golden brown.',
+        'Cook until both sides are crispy and cooked through.',
+        'Drizzle with okonomiyaki sauce and Japanese mayo.',
+        'Sprinkle bonito flakes and aonori on top before serving.',
+      ],
+    ),
+    Recipe(
+      name: 'Teriyaki Chicken',
+      ingredients: [
+        'Chicken thighs, boneless and skinless',
+        'Soy sauce',
+        'Mirin',
+        'Brown sugar',
+        'Garlic, minced',
+        'Ginger, grated',
+        'Vegetable oil',
+        'Sesame seeds',
+        'Green onions, sliced',
+      ],
+      instructions: [
+        'In a bowl, mix soy sauce, mirin, brown sugar, minced garlic, and grated ginger to make the teriyaki sauce.',
+        'Marinate chicken thighs in the sauce for at least 30 minutes.',
+        'Heat vegetable oil in a pan and cook chicken until golden brown and cooked through.',
+        'Drizzle with additional teriyaki sauce while cooking.',
+        'Garnish with sesame seeds and sliced green onions before serving.',
+      ],
+    ),
+    Recipe(
+      name: 'Sukiyaki',
+      ingredients: [
+        'Thinly sliced beef',
+        'Tofu, cubed',
+        'Shiitake mushrooms',
+        'Napa cabbage, sliced',
+        'Green onions, cut into 2-inch pieces',
+        'Enoki mushrooms',
+        'Shirataki noodles',
+        'Soy sauce',
+        'Mirin',
+        'Sugar',
+        'Sake',
+      ],
+      instructions: [
+        'In a hot pot, combine soy sauce, mirin, sugar, and sake to make the sukiyaki sauce.',
+        'Layer ingredients in the pot, starting with beef, tofu, shiitake mushrooms, napa cabbage, green onions, enoki mushrooms, and shirataki noodles.',
+        'Pour the sukiyaki sauce over the ingredients and simmer until cooked.',
+        'Dip the cooked ingredients in beaten raw egg before eating.',
+      ],
+    ),
+    Recipe(
+      name: 'Chawanmushi',
+      ingredients: [
+        'Chicken broth',
+        'Boneless chicken, diced',
+        'Shrimp, peeled and deveined',
+        'Shiitake mushrooms, sliced',
+        'Ginkgo nuts',
+        'Soy sauce',
+        'Mirin',
+        'Eggs',
+        'Salt',
+        'Green onions, chopped',
+      ],
+      instructions: [
+        'Whisk together chicken broth, soy sauce, mirin, and salt.',
+        'Divide diced chicken, shrimp, shiitake mushrooms, and ginkgo nuts into small bowls.',
+        'Pour the broth mixture into each bowl.',
+        'Beat eggs and pour over the ingredients in each bowl.',
+        'Steam the bowls until the chawanmushi is set.',
+        'Garnish with chopped green onions before serving.',
+      ],
+    ),
+  ],
+),
+Cuisine(
+  name: 'Indian',
+  recipes: [
+    Recipe(
+      name: 'Chicken Tikka Masala',
+      ingredients: [
+        'Chicken thighs',
+        'Yogurt',
+        'Garam masala',
+        'Cumin',
+        'Coriander',
+        'Tomato sauce',
+        'Cream',
+      ],
+      instructions: [
+        'Marinate chicken thighs in a mixture of yogurt and spices.',
+        'Grill or bake the marinated chicken until cooked.',
+        'In a separate pan, simmer tomato sauce with cream.',
+        'Add the cooked chicken to the sauce and simmer until flavors meld.',
+        'Serve with rice or naan bread.',
+      ],
+    ),
+    Recipe(
+      name: 'Palak Paneer',
+      ingredients: [
+        'Paneer (Indian cottage cheese)',
+        'Spinach',
+        'Onions',
+        'Tomatoes',
+        'Ginger-garlic paste',
+        'Cumin',
+        'Coriander',
+        'Turmeric',
+        'Cream',
+      ],
+      instructions: [
+        'Sauté onions in a pan until golden brown.',
+        'Add ginger-garlic paste and cook until fragrant.',
+        'Add chopped tomatoes, spinach, and spices; cook until spinach wilts.',
+        'Blend the mixture into a smooth paste.',
+        'In the same pan, cook paneer cubes until golden.',
+        'Add the spinach mixture and cream, simmer until well combined.',
+        'Serve with rice or naan bread.',
+      ],
+    ),
+    
+  ],
+),
+Cuisine(
+  name: 'Mexican',
+  recipes: [
+    Recipe(
+      name: 'Chicken Enchiladas',
+      ingredients: [
+        'Chicken breasts',
+        'Flour tortillas',
+        'Enchilada sauce',
+        'Black beans',
+        'Corn',
+        'Cheese',
+        'Sour cream',
+        'Cilantro',
+      ],
+      instructions: [
+        'Cook and shred chicken breasts.',
+        'Fill flour tortillas with shredded chicken, black beans, and corn.',
+        'Roll the tortillas and place them in a baking dish.',
+        'Pour enchilada sauce over the rolled tortillas.',
+        'Top with cheese and bake until bubbly.',
+        'Serve with sour cream and cilantro.',
+      ],
+    ),
+    Recipe(
+      name: 'Guacamole',
+      ingredients: [
+        'Avocados',
+        'Tomatoes',
+        'Onion',
+        'Lime juice',
+        'Cilantro',
+        'Salt',
+        'Garlic',
+        'Jalapeño (optional)',
+      ],
+      instructions: [
+        'Mash avocados in a bowl.',
+        'Add diced tomatoes, chopped onion, lime juice, and minced garlic.',
+        'Season with salt and stir in chopped cilantro.',
+        'For extra heat, add finely diced jalapeño.',
+        'Mix well and serve with tortilla chips.',
+      ],
+    ),
+    // Add more Mexican recipes...
+  ],
+),
+Cuisine(
+  name: 'Chinese',
+  recipes: [
+    Recipe(
+      name: 'Sweet and Sour Chicken',
+      ingredients: [
+        'Chicken breast',
+        'Pineapple chunks',
+        'Bell peppers',
+        'Onion',
+        'Soy sauce',
+        'Ketchup',
+        'Rice vinegar',
+        'Brown sugar',
+        'Cornstarch',
+      ],
+      instructions: [
+        'Cut chicken into bite-sized pieces and cook until browned.',
+        'In a saucepan, combine soy sauce, ketchup, rice vinegar, and brown sugar.',
+        'Mix cornstarch with water and add to the sauce for thickness.',
+        'Stir in pineapple chunks, bell peppers, and onions.',
+        'Add cooked chicken to the sweet and sour sauce.',
+        'Serve over rice and enjoy.',
+      ],
+    ),
+    Recipe(
+      name: 'Vegetable Stir-Fry',
+      ingredients: [
+        'Broccoli',
+        'Carrots',
+        'Snap peas',
+        'Bell peppers',
+        'Soy sauce',
+        'Garlic',
+        'Ginger',
+        'Sesame oil',
+        'Rice',
+      ],
+      instructions: [
+        'Stir-fry broccoli, carrots, snap peas, and bell peppers in sesame oil.',
+        'Add minced garlic and ginger for flavor.',
+        'Pour soy sauce over the vegetables and toss.',
+        'Serve the vegetable stir-fry over cooked rice.',
+      ],
+    ),
+    // Add more Chinese recipes...
+  ],
+),
+Cuisine(
+  name: 'Greek',
+  recipes: [
+    Recipe(
+      name: 'Greek Salad',
+      ingredients: [
+        'Cucumbers',
+        'Tomatoes',
+        'Kalamata olives',
+        'Red onion',
+        'Feta cheese',
+        'Olive oil',
+        'Red wine vinegar',
+        'Oregano',
+        'Salt and pepper',
+      ],
+      instructions: [
+        'Dice cucumbers, tomatoes, and red onion.',
+        'Combine with Kalamata olives and crumbled feta cheese.',
+        'Drizzle olive oil and red wine vinegar over the salad.',
+        'Season with oregano, salt, and pepper.',
+        'Toss gently and serve as a refreshing Greek salad.',
+      ],
+    ),
+    Recipe(
+      name: 'Moussaka',
+      ingredients: [
+        'Eggplant',
+        'Ground lamb or beef',
+        'Onion',
+        'Garlic',
+        'Tomato sauce',
+        'Cinnamon',
+        'Nutmeg',
+        'Milk',
+        'Flour',
+        'Butter',
+        'Egg',
+      ],
+      instructions: [
+        'Slice and salt eggplant, then rinse and pat dry.',
+        'Sauté ground lamb or beef with onion and garlic.',
+        'Layer eggplant with meat sauce in a baking dish.',
+        'Prepare béchamel sauce with milk, flour, butter, and egg.',
+        'Pour béchamel over the layers and bake until golden brown.',
+        'Allow moussaka to cool before serving.',
+      ],
+    ),
+    // Add more Greek recipes...
+  ],
+),
+Cuisine(
+  name: 'Thai',
+  recipes: [
+    Recipe(
+      name: 'Pad Thai',
+      ingredients: [
+        'Rice noodles',
+        'Shrimp or chicken',
+        'Bean sprouts',
+        'Tofu',
+        'Green onions',
+        'Peanuts',
+        'Egg',
+        'Lime',
+        'Soy sauce',
+        'Fish sauce',
+        'Tamarind paste',
+      ],
+      instructions: [
+        'Soak rice noodles in warm water until softened.',
+        'Stir-fry shrimp or chicken with tofu, bean sprouts, and green onions.',
+        'Push the ingredients to the side and scramble the egg in the empty space.',
+        'Add soaked rice noodles and sauce made from soy sauce, fish sauce, and tamarind paste.',
+        'Toss everything together until well-coated.',
+        'Serve with peanuts and lime wedges.',
+      ],
+    ),
+    Recipe(
+      name: 'Tom Yum Soup',
+      ingredients: [
+        'Shrimp',
+        'Mushrooms',
+        'Lemongrass',
+        'Galangal or ginger',
+        'Kaffir lime leaves',
+        'Chilies',
+        'Fish sauce',
+        'Lime juice',
+        'Cilantro',
+      ],
+      instructions: [
+        'Boil shrimp, mushrooms, lemongrass, galangal, and kaffir lime leaves in broth.',
+        'Season with chilies, fish sauce, and lime juice.',
+        'Serve hot, garnished with fresh cilantro.',
+      ],
+    ),
+    // Add more Thai recipes...
+  ],
+),
+Cuisine(
+  name: 'Lebanese',
+  recipes: [
+    Recipe(
+      name: 'Hummus',
+      ingredients: [
+        'Chickpeas',
+        'Tahini',
+        'Garlic',
+        'Lemon juice',
+        'Olive oil',
+        'Salt',
+      ],
+      instructions: [
+        'Blend chickpeas, tahini, minced garlic, and lemon juice in a food processor.',
+        'Drizzle olive oil and season with salt.',
+        'Blend until smooth and creamy.',
+        'Serve hummus with pita bread or fresh vegetables.',
+      ],
+    ),
+    Recipe(
+      name: 'Falafel',
+      ingredients: [
+        'Chickpeas',
+        'Onion',
+        'Garlic',
+        'Parsley',
+        'Cumin',
+        'Coriander',
+        'Flour',
+        'Baking powder',
+        'Salt',
+        'Vegetable oil',
+      ],
+      instructions: [
+        'Combine chickpeas, onion, garlic, parsley, cumin, and coriander in a food processor.',
+        'Add flour, baking powder, and salt to form a dough.',
+        'Shape the mixture into small balls and deep fry until golden brown.',
+        'Serve falafel in pita pockets with tahini sauce.',
+      ],
+    ),
+    // Add more Lebanese recipes...
+  ],
+),Cuisine(
+  name: 'Korean',
+  recipes: [
+    Recipe(
+      name: 'Bibimbap',
+      ingredients: [
+        'Cooked rice',
+        'Sautéed vegetables (carrots, spinach, mushrooms)',
+        'Gochujang (Korean red pepper paste)',
+        'Soy sauce',
+        'Sesame oil',
+        'Fried egg',
+        'Kimchi',
+        'Ground beef or tofu (optional)',
+        'Sesame seeds',
+      ],
+      instructions: [
+        'Arrange cooked rice in a bowl.',
+        'Top with sautéed vegetables, kimchi, and a fried egg.',
+        'Drizzle with a mixture of gochujang, soy sauce, and sesame oil.',
+        'Optionally, add ground beef or tofu for protein.',
+        'Sprinkle with sesame seeds and mix before eating.',
+      ],
+    ),
+    Recipe(
+      name: 'Kimchi Jjigae',
+      ingredients: [
+        'Kimchi',
+        'Pork belly or tofu',
+        'Onion',
+        'Garlic',
+        'Gochugaru (Korean red pepper flakes)',
+        'Soy sauce',
+        'Tofu',
+        'Green onions',
+        'Sesame oil',
+      ],
+      instructions: [
+        'Sauté pork belly (or tofu) with chopped onion and garlic.',
+        'Add chopped kimchi and gochugaru, stir-fry until fragrant.',
+        'Pour in water or broth and bring to a boil.',
+        'Season with soy sauce and sesame oil.',
+        'Add tofu and green onions, simmer until flavors meld.',
+      ],
+    ),
+    // Add more Korean recipes...
+  ],
+),
+Cuisine(
+  name: 'Vietnamese',
+  recipes: [
+    Recipe(
+      name: 'Pho',
+      ingredients: [
+        'Rice noodles',
+        'Beef broth',
+        'Thinly sliced beef',
+        'Bean sprouts',
+        'Basil leaves',
+        'Lime wedges',
+        'Chili peppers',
+        'Hoisin sauce',
+        'Sriracha sauce',
+      ],
+      instructions: [
+        'Cook rice noodles according to package instructions.',
+        'In a bowl, layer thinly sliced beef over the noodles.',
+        'Pour hot beef broth over the beef and noodles.',
+        'Serve with bean sprouts, basil leaves, lime wedges, and condiments.',
+      ],
+    ),
+    Recipe(
+      name: 'Banh Mi',
+      ingredients: [
+        'Baguette',
+        'Grilled pork or chicken',
+        'Pickled vegetables (carrots, daikon)',
+        'Cilantro',
+        'Mayonnaise',
+        'Soy sauce',
+        'Chili sauce',
+      ],
+      instructions: [
+        'Slice the baguette and spread mayonnaise on one side.',
+        'Layer grilled pork or chicken on the bread.',
+        'Top with pickled vegetables and fresh cilantro.',
+        'Drizzle with soy sauce and chili sauce to taste.',
+        'Close the sandwich and enjoy!',
+      ],
+    ),
+    // Add more Vietnamese recipes...
+  ],
+),
+Cuisine(
+  name: 'Indonesian',
+  recipes: [
+    Recipe(
+      name: 'Nasi Goreng',
+      ingredients: [
+        'Cooked rice',
+        'Shrimp or chicken',
+        'Kecap manis (sweet soy sauce)',
+        'Soy sauce',
+        'Chilies',
+        'Garlic',
+        'Onions',
+        'Fried eggs',
+        'Cucumber slices',
+      ],
+      instructions: [
+        'Sauté chopped garlic and onions until fragrant.',
+        'Add shrimp or chicken, cook until browned.',
+        'Stir in cooked rice, kecap manis, soy sauce, and chilies.',
+        'Serve with a fried egg on top and cucumber slices.',
+      ],
+    ),
+    Recipe(
+      name: 'Satay',
+      ingredients: [
+        'Chicken or beef skewers',
+        'Satay sauce',
+        'Cucumber and onion slices',
+        'Rice cakes or steamed rice',
+      ],
+      instructions: [
+        'Grill or broil chicken or beef skewers until cooked.',
+        'Serve with satay sauce for dipping.',
+        'Include cucumber and onion slices on the side.',
+        'Pair with rice cakes or steamed rice.',
+      ],
+    ),
+    // Add more Indonesian recipes...
+  ],
+),
+Cuisine(
+  name: 'Malaysian',
+  recipes: [
+    Recipe(
+      name: 'Nasi Lemak',
+      ingredients: [
+        'Coconut rice',
+        'Fried anchovies',
+        'Peanuts',
+        'Hard-boiled eggs',
+        'Sambal (spicy chili paste)',
+        'Cucumber slices',
+        'Ikan bilis (dried anchovies)',
+        'Sliced tomatoes',
+      ],
+      instructions: [
+        'Cook rice with coconut milk to make coconut rice.',
+        'Serve with fried anchovies, peanuts, and sliced cucumber.',
+        'Top with hard-boiled eggs and ikan bilis.',
+        'Drizzle with sambal and garnish with sliced tomatoes.',
+      ],
+    ),
+    Recipe(
+      name: 'Roti Canai',
+      ingredients: [
+        'Roti canai (flatbread)',
+        'Chicken or beef curry',
+        'Dhal curry',
+        'Sambal',
+      ],
+      instructions: [
+        'Serve warm roti canai with chicken or beef curry.',
+        'Include dhal curry and sambal on the side.',
+        'Tear the roti and dip it into the curries.',
+        'Enjoy the delicious combination of flavors.',
+      ],
+    ),
+    // Add more Malaysian recipes...
+  ],
+),
+Cuisine(
+  name: 'Filipino',
+  recipes: [
+    Recipe(
+      name: 'Adobo',
+      ingredients: [
+        'Chicken or pork',
+        'Soy sauce',
+        'Vinegar',
+        'Garlic',
+        'Bay leaves',
+        'Peppercorns',
+      ],
+      instructions: [
+        'Combine soy sauce, vinegar, garlic, bay leaves, and peppercorns.',
+        'Marinate chicken or pork in the mixture for at least 30 minutes.',
+        'Simmer in a pot until meat is tender and sauce thickens.',
+        'Serve with steamed rice.',
+      ],
+    ),
+    Recipe(
+      name: 'Sinigang',
+      ingredients: [
+        'Pork ribs or shrimp',
+        'Tamarind broth',
+        'Radish',
+        'Eggplant',
+        'String beans',
+        'Spinach',
+        'Fish sauce',
+      ],
+      instructions: [
+        'Boil pork ribs or shrimp in tamarind broth.',
+        'Add radish, eggplant, and string beans; simmer until tender.',
+        'Stir in spinach and season with fish sauce.',
+        'Serve hot as a comforting soup.',
+      ],
+    ),
+    // Add more Filipino recipes...
+  ],
+),
+// Add more cuisines...
+
+
+
+
+
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Cuisine Recipes'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () async {
+              final String? selected = await showSearch<String>(
+                context: context,
+                delegate: CuisineSearchDelegate(cuisines),
+              );
+              if (selected != null && selected.isNotEmpty) {
+                // Handle the selected item from search
+                print('Selected item: $selected');
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.favorite),
+            onPressed: () {
+              // Navigate to the liked recipes page
+              // For demonstration purposes, show a snackbar
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Liked Recipes'),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: ListView.builder(
+        itemCount: cuisines.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Card(
+              elevation: 5,
+              child: ListTile(
+                title: Text(cuisines[index].name),
+                onTap: () {
+                  // Navigate to the recipes page for the selected cuisine
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CuisineRecipePage(cuisines[index]),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+class CuisineSearchDelegate extends SearchDelegate<String> {
+  final List<Cuisine> cuisines;
+
+  CuisineSearchDelegate(this.cuisines);
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, '');
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final List<String> searchResults = cuisines
+        .where((cuisine) =>
+            cuisine.name.toLowerCase().contains(query.toLowerCase()))
+        .map((cuisine) => cuisine.name)
+        .toList();
+
+    return ListView.builder(
+      itemCount: searchResults.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(searchResults[index]),
+          onTap: () {
+            close(context, searchResults[index]);
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestionList = query.isEmpty
+        ? []
+        : cuisines
+            .where((cuisine) =>
+                cuisine.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+
+    return ListView.builder(
+      itemCount: suggestionList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(suggestionList[index].name),
+          onTap: () {
+            close(context, suggestionList[index].name);
+          },
+        );
+      },
+    );
+  }
+}
+
+
+class CuisineRecipePage extends StatelessWidget {
+  final Cuisine cuisine;
+
+  CuisineRecipePage(this.cuisine);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(cuisine.name),
+      ),
+      body: ListView.builder(
+        itemCount: cuisine.recipes.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Card(
+              elevation: 5,
+              child: ListTile(
+                title: Text(cuisine.recipes[index].name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          RecipeDetailsPage(cuisine.recipes[index]),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class RecipeDetailsPage extends StatefulWidget {
+  final Recipe recipe;
+
+  RecipeDetailsPage(this.recipe);
+
+  @override
+  _RecipeDetailsPageState createState() => _RecipeDetailsPageState();
+}
+
+class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
+  bool isLiked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.recipe.name),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isLiked ? Icons.favorite : Icons.favorite_border,
+              color: Colors.red,
+            ),
+            onPressed: () {
+              setState(() {
+                isLiked = !isLiked;
+              });
+              showLikeSnackbar(context, widget.recipe, isLiked);
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Ingredients:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widget.recipe.ingredients.map((ingredient) {
+                return Text('- $ingredient');
+              }).toList(),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Instructions:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widget.recipe.instructions.map((instruction) {
+                return Text('- $instruction');
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void showLikeSnackbar(BuildContext context, Recipe recipe, bool isLiked) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(isLiked
+          ? 'Added to Liked Recipes: ${recipe.name}'
+          : 'Removed from Liked Recipes: ${recipe.name}'),
+    ),
+  );
+}
+
+
+
+class LikedRecipesPage extends StatelessWidget {
+  final List<Recipe> likedRecipes;
+
+  LikedRecipesPage(this.likedRecipes);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Liked Recipes'),
+      ),
+      body: ListView.builder(
+        itemCount: likedRecipes.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Card(
+              elevation: 5,
+              child: ListTile(
+                title: Text(likedRecipes[index].name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          RecipeDetailsPage(likedRecipes[index]),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+class RecipeSearchResults extends StatelessWidget {
+  final List<Recipe> searchResults;
+
+  RecipeSearchResults(this.searchResults);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Search Results'),
+      ),
+      body: ListView.builder(
+        itemCount: searchResults.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Card(
+              elevation: 5,
+              child: ListTile(
+                title: Text(searchResults[index].name),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          RecipeDetailsPage(searchResults[index]),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
